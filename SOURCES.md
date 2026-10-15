@@ -16,7 +16,7 @@ No native integration or model session is recorded as evidence in this repositor
 
 ## Prior art under the same or a close name
 
-Read on 2026-10-14 (GitHub API and a clone of thellmwhisperer/human.md). Stars and dates as of that day; these projects change, re-check before each release. None of them declares a `humans` version, so a consumer treats their files as absent (SPEC § 1).
+Read on 2026-10-14 (GitHub API and a clone of thellmwhisperer/human.md). Stars and dates as of that day, except the commit count of hehamalainen/Humans.md, re-checked with the GitHub API on 2026-10-15. These projects change; re-check before each release. None of them declares a `humans` version, so a consumer treats their files as absent (SPEC § 1).
 
 | Project | Source | What it is | Overlap with HUMANS.md |
 |---|---|---|---|
