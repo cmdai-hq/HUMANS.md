@@ -2,6 +2,8 @@
 
 > AGENTS.md is for your codebase. **HUMANS.md is for you.**
 
+**Website: [humansmd.dev](https://humansmd.dev)** · Specification: [SPEC.md](SPEC.md)
+
 A file for your agents, and your colleagues' agents, to read before they spend your attention: how to write to you, when to ask you to decide, and when to interrupt you. You approve every preference, and it can include personal information you choose to share. An integration is required to load it.
 
 This is a complete, copyable `~/.humans/me.md` example (also [available as a file](examples/me.md)). Replace the example identity and approval date with your own:
