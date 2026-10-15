@@ -23,7 +23,7 @@ export const parseProfile = (input, opts = { mode: 'read' }) => parseCore(input,
  */
 export function loadProfile(path, mode = 'read', draft = false) {
   const name = basename(path);
-  try { return parseProfile(readBounded(path), { mode, kind: name === 'me.md' ? 'me' : 'repo', expectedId: name === 'me.md' ? undefined : name.endsWith('.md') ? name.slice(0, -3) : '', draft }); }
+  try { return parseProfile(readBounded(path), { mode, kind: name === 'HUMANS.md' ? 'me' : 'repo', expectedId: name === 'HUMANS.md' ? undefined : name.endsWith('.md') ? name.slice(0, -3) : '', draft }); }
   catch (error) { return invalid(error.code === 'PROFILE_INVALID' ? 'PROFILE_INVALID' : 'PROFILE_UNAVAILABLE'); }
 }
 /** Return error messages from strict file validation, omitting warnings. */

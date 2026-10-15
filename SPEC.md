@@ -53,8 +53,8 @@ A core consumer MAY omit the entire `context` extension when it declares that li
 
 | File | Content | Normal access |
 |---|---|---|
-| `~/.humans/me.source.md` | Owner's free text, any language | Compiler only on an explicit compilation request; may be processed by its hosted provider |
-| `~/.humans/me.md` | Approved canonical YAML frontmatter, no body | Consumers read it and adapters serve the projection, never the original bytes |
+| `~/.humans/HUMANS.md` | Approved canonical YAML frontmatter, no body | Consumers read it and adapters serve the projection, never the original bytes |
+| `~/.humans/source.md` | Owner's free text, any language | Compiler only on an explicit compilation request; may be processed by its hosted provider |
 | `humans/<id>.md` or `~/.humans/people/<id>.md` | Canonical profile, optional human-facing body | Consumers enforce visibility before serving a projection |
 
 ### 3.1 Bytes, delimiters and YAML
@@ -65,7 +65,7 @@ Readers and writers MUST apply these checks to original bytes before parsing:
 - Accept zero or one initial UTF-8 BOM (`EF BB BF`); remove it for delimiter recognition. A second BOM or U+FEFF elsewhere in the file is invalid.
 - The opening line is exactly `---` followed by LF or CRLF. The next line exactly `---` closes the frontmatter, followed by LF, CRLF or end of file. Leading spaces, trailing spaces, bare CR and other line endings are invalid delimiters. Mixed LF/CRLF is allowed; a bare CR anywhere in the file is invalid.
 - Frontmatter size is **at most 20 KiB = 20,480 bytes**: start immediately after the opening line's LF and stop immediately before the first hyphen of the closing delimiter. All internal line endings, including the last one before the closing delimiter, count, and so do YAML comments such as the compiled header (§ 10). Delimiter lines and the initial BOM do not count.
-- Body size is **at most 4 KiB = 4,096 bytes**: all bytes after the closing delimiter line's line ending (zero if it ends at EOF). A `me.md` has zero body bytes, including whitespace. Other `.md` profile files may have a human-facing body within the bound. Consumers MUST NOT serve any body.
+- Body size is **at most 4 KiB = 4,096 bytes**: all bytes after the closing delimiter line's line ending (zero if it ends at EOF). A `HUMANS.md` has zero body bytes, including whitespace. Other `.md` profile files may have a human-facing body within the bound. Consumers MUST NOT serve any body.
 - Bound the complete read before parsing: at most **24,589 bytes** (20,480 + 4,096 + two 5-byte CRLF delimiter lines + a 3-byte BOM). A bounded read may request one extra byte only to detect overflow. Check the component limits too. Count raw bytes before CRLF normalization, decoding normalization or YAML processing.
 
 The frontmatter is exactly one YAML 1.2 core-schema document with a mapping root. Validators and consumers MUST reject anchors, aliases, explicit tags, directives, document-end markers, duplicate mapping keys (including equivalent decoded spellings), non-string mapping keys and non-JSON values. Every mapping is processed as data, never as object prototypes or executable constructors. The first exact closing delimiter always terminates frontmatter; later text is body, never a second profile. A document marker encountered as YAML syntax within the extracted frontmatter is invalid. Reject unpaired surrogates in decoded YAML strings and keys, including escapes in unknown fields, before filtering.
@@ -77,7 +77,7 @@ All fields are optional except these four: `humans`, `id`, `name`, `updated`. Ab
 | Field | Value |
 |---|---|
 | `humans` | Required string `"0.3"`; quoting is necessary to avoid a YAML number. Readers also accept `"0.2"` (§ 11) |
-| `id` | Required slug `[a-z0-9-]{2,64}`, unique in its directory; equals the basename without `.md` except for a file named exactly `me.md` |
+| `id` | Required slug `[a-z0-9-]{2,64}`, unique in its directory; equals the basename without `.md` except for a file named exactly `HUMANS.md` |
 | `name` | Required plain text (§ 3.8), 1–80 Unicode scalar values; resolution/UI only, never projected |
 | `aliases` | Up to 5 distinct plain-text strings, 1–40 scalar values each; resolution/UI only |
 | `identities` | Closed map of email, Slack, GitHub, GitLab, Entra and Google claims, as constrained by the schema; never proof of identity or projected |
@@ -87,7 +87,7 @@ All fields are optional except these four: `humans`, `id`, `name`, `updated`. Ab
 
 Dates use the proleptic Gregorian calendar for four-digit years **0000–9999**, including year zero; a leap year is divisible by 4 except centuries not divisible by 400. Date values MUST be strings and real dates. Quoting dates is recommended, not a validity condition when YAML core already produces a string. No host-language year-0–99 substitution is allowed. Staleness uses whole UTC calendar days and an explicit `today` date; future dates are valid and not stale.
 
-The filename rule applies in every directory and every input path. A CLI MAY offer an explicitly named draft mode that skips only filename matching and reports that it did so. Canonical `validate`, sharing and rendering do not inherit such an exemption from a directory name. A draft can also use the filename `me.md`.
+The filename rule applies in every directory and every input path. A CLI MAY offer an explicitly named draft mode that skips only filename matching and reports that it did so. Canonical `validate`, sharing and rendering do not inherit such an exemption from a directory name. A draft can also use the filename `HUMANS.md`.
 
 New-profile compilers SHOULD propose explicit `visibility: private`. They MUST preserve an existing profile's effective visibility, including omitted `org`, unless the owner explicitly approves a scope change. Omission is not a migration to private and must not be introduced into an existing private profile.
 
@@ -215,7 +215,7 @@ Consumers and adapters MUST present the projection as data. Agents MUST NOT foll
 
 ## 5. Locations and adapters
 
-Use `me.md` for a personal profile, `humans/<id>.md` for repository sharing, and `me.source.md` for free-text edits awaiting compilation. A root `HUMANS.md` may link to profiles; it is an index, not an implicit instruction file. Caches and remote stores must enforce the same visibility and invalidation rules as their source.
+Your personal profile is `~/.humans/HUMANS.md`: the file carries the format's name, and lives in its own directory as `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md` do. It is the only file you need. Adapters load it from that fixed path, whatever the working directory, and never search repositories for it. The same directory holds the optional `source.md`, your free text awaiting compilation, and `people/<id>.md`, profiles others shared with you. A repository shares profiles, one per person, as `humans/<id>.md`. A repository-root `HUMANS.md` is not a profile location: consumers do not load it; it may be a team index linking to `humans/<id>.md`, never an implicit instruction file. A hidden directory is not access control: visibility and conformant consumers protect a profile. Caches and remote stores must enforce the same visibility and invalidation rules as their source.
 
 A repository can request review with `humans/<id>.md @<handle>` in CODEOWNERS. **CODEOWNERS alone does not make the owner the exclusive approver.** Enforcement depends on branch protection/rulesets, required code-owner review, matching rules, eligible write permissions and bypass rights. When the effective matching rule names several owners, any one of them may satisfy code-owner review. Protect CODEOWNERS itself and review the actual rules and bypass actors. No profile file proves those controls exist. See the dated evidence and limits in [SOURCES.md](SOURCES.md).
 
@@ -327,13 +327,13 @@ Zero members yields `{ "humans_group": "0.3", "coverage": { "with_profile": 0, "
 
 ## 10. Compiling free text
 
-1. Read `me.source.md` only when the owner requests compilation. Announce the actual compiler/provider: source processed by a hosted model leaves the device for that provider, even when the command runs locally. Do not claim an entirely local path without implementing and testing one.
+1. Read `~/.humans/source.md` only when the owner requests compilation. Announce the actual compiler/provider: source processed by a hosted model leaves the device for that provider, even when the command runs locally. Do not claim an entirely local path without implementing and testing one.
 2. Accept source headings `## What I read`, `## What I decide`, `## When to interrupt me` and the French equivalents `## Ce que je lis`, `## Ce que je décide`, `## Quand tu m'interromps`. Tools MUST accept both sets. Ignore source HTML comments as compilation instructions. A free-text proposal edits this source, never inserts prose into canonical frontmatter.
 3. Propose fields and notes. Do not infer a diagnosis. Preserve requested personal statements; distinguish them from action/task-changing instructions. Translate explicit bounds exactly: “fewer than 150 words” means `max_words: 149`. If an exact request is outside 20–2000, report the unrepresentable bound rather than silently clamp it. Reading level, mobile layout and technical quotation needs can be expressed in notes when no closed field captures them.
 4. Show a normal preview of every proposed field (including that a `quiet_hours.time_zone` indicates an approximate location), the visibility with a plain statement of who will be able to read the profile (for `anyone_with_file`: anyone who has the file, which includes anyone on the Internet if it sits in a public repository), the intended recipients, the provider that processed the source, notes that would be served/withheld, and any loss, interpretation or proposed inference (for example, a role mapped from a résumé). The owner approves before writing the canonical profile. There is no extra medical consent screen imposed by the format.
-5. Strictly validate the approved file, preserve existing sharing unless a change was approved, and write `me.md`, starting with the header below. Consumers subsequently serve only the projection. Updating or withdrawing the profile invalidates derived artifacts/caches; do not retain activation history or log source/notes for telemetry.
+5. Strictly validate the approved file, preserve existing sharing unless a change was approved, and write `HUMANS.md`, starting with the header below. Consumers subsequently serve only the projection. Updating or withdrawing the profile invalidates derived artifacts/caches; do not retain activation history or log source/notes for telemetry.
 
-A compiler that writes `me.md` puts these three YAML comment lines right after the opening delimiter line, byte for byte, each followed by LF:
+A compiler that writes `HUMANS.md` puts these three YAML comment lines right after the opening delimiter line, byte for byte, each followed by LF:
 
 ```text
 # HUMANS.md 0.3: how to work with me. Form only, never a permission: repo rules and your harness win.

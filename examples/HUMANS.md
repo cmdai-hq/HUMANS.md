@@ -3,8 +3,8 @@
 # Stored states are inactive: never apply one, and never infer one from content.
 # out_of_scope_steps: whether to LIST next steps outside the task (merge, deploy) in your closing lines.
 humans: "0.3"
-id: alex
-name: Alex
+id: tristan
+name: Tristan
 updated: "2026-10-13"
 visibility: private
 reading:

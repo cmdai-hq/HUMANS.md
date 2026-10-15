@@ -199,7 +199,7 @@
     },
     {
       "id": "compiled-header",
-      "filename": "me.md",
+      "filename": "HUMANS.md",
       "today": "2026-10-13",
       "trusted_audience": "owner",
       "writer_valid": true,
@@ -791,7 +791,7 @@
     },
     {
       "id": "me-body",
-      "filename": "me.md",
+      "filename": "HUMANS.md",
       "today": "2026-10-13",
       "trusted_audience": "owner",
       "source": "---\nhumans: \"0.3\"\nid: sample\nname: Example\nupdated: \"2026-10-13\"\n---\n ",

@@ -23,7 +23,7 @@ export function parserCases(root) {
   return [...bytes, ...projections, ...files, ...regressions];
 }
 /** Derive parser mode, profile kind and expected repository id from a case filename. */
-export const optionsFor = (c, mode) => ({ mode, kind: c.filename === 'me.md' ? 'me' : 'repo', expectedId: c.filename === 'me.md' ? undefined : c.filename.replace(/\.md$/, '') });
+export const optionsFor = (c, mode) => ({ mode, kind: c.filename === 'HUMANS.md' ? 'me' : 'repo', expectedId: c.filename === 'HUMANS.md' ? undefined : c.filename.replace(/\.md$/, '') });
 /**
  * Run each shared case in read and write modes, checking declared validity and diagnostics,
  * the diagnostic size bound and the health-choice assertion; optionally compare complete parser results.

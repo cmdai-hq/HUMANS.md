@@ -99,7 +99,7 @@ test('real bounded file entrances use original bytes', () => {
       const file = join(dir,c.filename); writeFileSync(file,c.source);
       assert.equal(!!loadProfile(file,'write').profile,c.writer_valid,c.id);
     }
-    const file = join(dir,'me.md');
+    const file = join(dir,'HUMANS.md');
     writeFileSync(file,Buffer.alloc(2 ** 20, 0x61));
     assert.equal(loadProfile(file).profile,undefined);
   } finally { rmSync(dir,{recursive:true,force:true}); }
@@ -178,7 +178,7 @@ syncBuiltinESMExports();
 test('expect-invalid distinguishes unavailable files from malformed bytes through the real CLI', () => {
   const dir = mkdtempSync(join(tmpdir(), 'humans-expect-invalid-'));
   try {
-    const file = join(dir, 'me.md'), unreadable = join(dir, 'unreadable-PAYLOAD.md'), preload = join(dir, 'preload.mjs');
+    const file = join(dir, 'HUMANS.md'), unreadable = join(dir, 'unreadable-PAYLOAD.md'), preload = join(dir, 'preload.mjs');
     const cli = fileURLToPath(new URL('./validate.mjs', import.meta.url));
     writeFileSync(unreadable, 'PAYLOAD_MUST_NOT_APPEAR');
     // Deterministic EACCES even when the test runner has elevated filesystem privileges.

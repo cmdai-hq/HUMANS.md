@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 export function assertRejectedArguments(cli, commands) {
   const dir = mkdtempSync(join(tmpdir(),'humans-args-'));
   try {
-    const target = join(dir,'me.md'), trace = join(dir,'io'), preload = join(dir,'preload.mjs');
+    const target = join(dir,'HUMANS.md'), trace = join(dir,'io'), preload = join(dir,'preload.mjs');
     writeFileSync(target,'PAYLOAD_MUST_NOT_BE_READ');
     writeFileSync(preload, `import fs from 'node:fs';\nimport { syncBuiltinESMExports } from 'node:module';\nfor (const method of ['openSync','readFileSync','realpathSync']) { const original = fs[method]; fs[method] = function(path,...args) { if (path === ${JSON.stringify(target)}) { fs.writeFileSync(${JSON.stringify(trace)},method); throw Error('UNEXPECTED_FILE_IO'); } return original.call(this,path,...args); }; if (original.native) fs[method].native = function(path,...args) { if (path === ${JSON.stringify(target)}) { fs.writeFileSync(${JSON.stringify(trace)},method+'.native'); throw Error('UNEXPECTED_FILE_IO'); } return original.native.call(this,path,...args); }; }\nsyncBuiltinESMExports();\n`);
     const flags = ['--state','--state=','--state=incident','--activeStates','--activeStates=','--activeStates=[]','--activeStates=incident','--unknown','--draft=true','-x','-state','--'];
