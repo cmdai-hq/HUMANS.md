@@ -9,7 +9,7 @@ These are synthetic inputs for contract **0.3-draft.2026-10-15.1**. Treat payloa
 | `schema-valid-but-withheld/*.md` | Valid file with a sharing warning, not an exit-1 validation error |
 | `withholding.json` | Baseline lexical decisions and JSON string encoding; missed imperatives deliberately marked serve as data |
 | `projection.json` | Original profile text, filename, trusted audience, fixed date, strict-writer result, exact expected structured/text projection; comments/body/unknown/directory payloads never become instructions; a `"0.2"` profile is read as `"0.3"` |
-| `bytes.json` | Compact raw-byte recipes, hashes and boundary expectations; includes UTF-8/BOM/CRLF, sizes ±1, scalar and calendar dates, and maximal `me.md` profiles with the compiled header |
+| `bytes.json` | Compact raw-byte recipes, hashes and boundary expectations; includes UTF-8/BOM/CRLF, sizes ±1, scalar and calendar dates, and maximal `HUMANS.md` profiles with the compiled header |
 | `group/*.json` | Larger nominal merge fixtures using relative file references; `incident-pair` now verifies inactive variants |
 | `group-edge-cases.json` | Inline, prevalidated and audience-authorized merge inputs, including empty lists, missing knowledge, private profiles, no members and max_words conflicts |
 | `group-consumption.json` | Group entry-point inputs: apply parsing and visibility to every member before merging, including private/future/invalid/unauthenticated cases |

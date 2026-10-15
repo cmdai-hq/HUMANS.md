@@ -18,7 +18,7 @@
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9-]{2,64}$",
-      "description": "Unique within its directory. Equals the basename without .md in every directory, except a file named exactly me.md or an explicitly reported draft validation mode."
+      "description": "Unique within its directory. Equals the basename without .md in every directory, except a file named exactly HUMANS.md or an explicitly reported draft validation mode."
     },
     "name": {
       "type": "string",

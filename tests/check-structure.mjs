@@ -61,11 +61,11 @@ function validWith(check, data, name) {
 const positiveFiles = [...files('examples').filter(f => f.endsWith('.md') && !f.includes('/source/')), ...files('tests/valid'), ...files('tests/schema-valid-but-withheld')];
 for (const p of positiveFiles) validWith(validate, frontmatter(read(p)), p);
 const readmeExample = read('README.md').match(/```yaml\n([\s\S]*?)```/)[1];
-assert.equal(readmeExample, read('examples/me.md'), 'copyable README example drift');
+assert.equal(readmeExample, read('examples/HUMANS.md'), 'copyable README example drift');
 validWith(validate, frontmatter(readmeExample), 'README example');
-// The compiled me.md header (SPEC § 10) has one source: the text block in SPEC.md.
+// The compiled HUMANS.md header (SPEC § 10) has one source: the text block in SPEC.md.
 const header = read('SPEC.md').match(/```text\n(# HUMANS\.md 0\.3:[^\n]*\n#[^\n]*\n#[^\n]*\n)```/)[1];
-assert(read('examples/me.md').startsWith(`---\n${header}`), 'me.md example header');
+assert(read('examples/HUMANS.md').startsWith(`---\n${header}`), 'HUMANS.md example header');
 for (const c of json('tests/compilation.json').cases) if (c.required_file_prefix) assert.equal(c.required_file_prefix, `---\n${header}`, c.id);
 // The byte counts SPEC § 10 states for the header and the maximal profiles match the text and the byte vectors.
 const specText = read('SPEC.md');
@@ -74,7 +74,7 @@ const stated = /its ([0-9,]+) bytes count toward the ([0-9,]+)-byte limit[\s\S]*
 const maximal = id => json('tests/bytes.json').cases.find(c => c.id === id);
 assert.deepEqual(stated, [Buffer.byteLength(header), frontmatterLimit, maximal('maximal-me-header-no-variants').frontmatter_bytes, maximal('maximal-me-header-all-variants').frontmatter_bytes], 'SPEC § 10 byte counts');
 for (const id of ['maximal-me-header-no-variants', 'maximal-me-header-all-variants']) assert(maximal(id).writer_valid && maximal(id).frontmatter_bytes <= frontmatterLimit, id);
-console.log(`PASS schemas: ${schemaPaths.length}; positive profiles: ${positiveFiles.length}; complete README example identical; me.md header matches SPEC § 10`);
+console.log(`PASS schemas: ${schemaPaths.length}; positive profiles: ${positiveFiles.length}; complete README example identical; HUMANS.md header matches SPEC § 10`);
 
 const projections = json('tests/projection.json');
 for (const c of projections.cases) {

@@ -1,4 +1,4 @@
-<!-- ~/.humans/me.source.md: free text for requested compilation into ~/.humans/me.md. A hosted compiler provider processes this source; recipients receive only an authorized projection. -->
+<!-- ~/.humans/source.md: free text for requested compilation into ~/.humans/HUMANS.md. A hosted compiler provider processes this source; recipients receive only an authorized projection. -->
 
 ## What I read
 
