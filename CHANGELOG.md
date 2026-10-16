@@ -1,5 +1,16 @@
 # Changelog
 
+## Integrations — 2026-10-17
+
+Not a change to the format or its contract id.
+
+- Release 0.2.0 of [cmdai-hq/humans-md-plugins](https://github.com/cmdai-hq/humans-md-plugins) (`de2dd33`) adds plugins for Codex, GitHub Copilot CLI and Cursor beside the Claude Code plugin, each with its own marketplace file, and a guided interview in `/humans-md:compile`. Same scope: the owner's own `~/.humans/HUMANS.md` only.
+- Evidence, each a new session asked without tools to quote `profile.notes` from an invented profile, on macOS, plugin 0.2.0 installed from GitHub:
+  - Codex CLI 0.163.0: `codex plugin marketplace add cmdai-hq/humans-md-plugins`, `codex plugin add humans-md@humans-md`, hook trusted in `/hooks`, interactive session. Quoted.
+  - Cursor CLI 2026.10.16-e3cb207: marketplace added with `agent plugin marketplace add`, plugin installed in Cursor; session `agent -p`. Quoted; a control session without the plugin answered NONE.
+  - Cursor 3.25.6, editor agent panel, model Grok 4.7 High: quoted. The Agents Window did not receive the profile on the first or the second message.
+  - GitHub Copilot CLI 1.0.98 installs the plugin; no session has run. None of this establishes how closely a model follows the preferences.
+
 ## Integrations — 2026-10-16
 
 Not a change to the format or its contract id.
