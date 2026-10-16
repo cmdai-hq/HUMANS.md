@@ -42,7 +42,7 @@ any release or tag are the maintainer's call: propose, don't bump. Full policy:
 ## Git
 
 This is the canonical repository. The website package (`humans-md-site`) and
-the tools mirror (`humans-md`) pin commits of this repository; re-sync them
+the private workshop (`humans-md-workshop`) pin commits of this repository; re-sync them
 after a merged contract change.
 
 Branch off `main`, open a PR. Commits: `type(scope): summary`
