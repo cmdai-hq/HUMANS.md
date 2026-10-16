@@ -4,7 +4,7 @@
 
 **Website: [humansmd.dev](https://humansmd.dev)** · Specification: [SPEC.md](SPEC.md)
 
-A file for your agents, and your colleagues' agents, to read before they spend your attention: how to write to you, when to ask you to decide, and when to interrupt you. You approve every preference, and it can include personal information you choose to share. An integration is required to load it.
+A file for your agents, and your colleagues' agents, to read before they spend your attention: how to write to you, when to ask you to decide, and when to interrupt you. You approve every preference, and it can include personal information you choose to share. An integration is required to load it: the [Claude Code plugin and command line](https://github.com/cmdai-hq/humans-md-plugins) load your own profile.
 
 This is a complete, copyable `~/.humans/HUMANS.md` example (also [available as a file](examples/HUMANS.md)). Replace the example identity and approval date with your own:
 
