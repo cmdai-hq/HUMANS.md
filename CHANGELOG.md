@@ -5,7 +5,10 @@
 Not a change to the format or its contract id.
 
 - The humans-md Claude Code plugin 0.1.0 and the command line `@humans-md/cli` 0.1.0 (npm) are published from [cmdai-hq/humans-md-plugins](https://github.com/cmdai-hq/humans-md-plugins), for contract `0.3-draft.2026-10-15.1`. They load the owner's own `~/.humans/HUMANS.md` only: no colleague's profile, no group merge, no MCP server.
-- Evidence: a real session, asked without tools, quoted a value from an invented profile in the Claude Code CLI 2.1.301 with the plugin installed from GitHub. Claude Desktop 2.42304 and the VS Code extension 2.1.300 quoted it with an earlier build of 0.1.0; extension 2.1.89 did not load it. macOS only, 16 October 2026. Codex, Cursor and Copilot CLI hooks are documented, not tested. None of this establishes how closely a model follows the preferences.
+- Evidence, each a new session asked without tools to quote `profile.notes` from an invented profile, on macOS, 16 October 2026:
+  - Claude Code CLI 2.1.301, model `claude-haiku-5-5`: plugin installed from GitHub at `cmdai-hq/humans-md-plugins@4ea95dc` (`claude plugin marketplace add cmdai-hq/humans-md-plugins --scope local`, `claude plugin install humans-md@humans-md --scope local --config profile=<file>`), session `claude -p --no-session-persistence --model haiku`. Quoted.
+  - Claude Desktop 2.42304 and the VS Code extension 2.1.300: an earlier build of 0.1.0, generated from the workshop at `fc1cb5c` (SessionStart hook in exec form, since changed to shell form), installed from a local directory marketplace. Quoted. Extension 2.1.89 did not load it.
+  - Codex, Cursor and Copilot CLI hooks are documented, not tested. None of this establishes how closely a model follows the preferences.
 
 ## 0.3-draft.2026-10-15.1 — 2026-10-15
 
