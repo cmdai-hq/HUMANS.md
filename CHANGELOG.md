@@ -1,5 +1,19 @@
 # Changelog
 
+## Integrations 0.3.0 — 2026-10-17
+
+Not a change to the format or its contract id.
+
+- Release 0.3.0 of [cmdai-hq/humans-md-plugins](https://github.com/cmdai-hq/humans-md-plugins) ([#5](https://github.com/cmdai-hq/humans-md-plugins/pull/5)) adds plugins for Google Antigravity, OpenCode, Devin and JetBrains Junie (Early Access extension), `humans-md sync` for clients that run no hook, and a portable compile skill installable with `npx skills add`. Same scope: the owner's own `~/.humans/HUMANS.md` only.
+- `humans-md sync` writes a marked copy of the projection into a user instruction file read by Cline and the Warp Agent CLI (`~/.agents/AGENTS.md`) or the Junie CLI (`~/.junie/AGENTS.md`). It is a copy, not an adapter that reads the file at each load (§ 5): it goes stale until the owner runs it again.
+- Evidence, each a new session asked without tools to quote `profile.notes` from an invented profile, on macOS, with the 0.3.0 build before publication (a local copy of the generated repository, not installed from GitHub):
+  - Google Antigravity CLI 1.4.0 (`agy -p`, then `-c`): quoted once. A first build that also injected on `PreInvocation` delivered it twice; the published plugin uses `SessionStart` only.
+  - OpenCode 2.0.32, model `anthropic/claude-haiku-5-5`, standalone and through the background service: quoted once, and on the next turn.
+  - Devin CLI 3000.11.92 (`devin -p`, then `-c`): quoted once. The Claude Code plugin alone, installed in Devin, delivered nothing.
+  - Junie CLI 26.10.12, copy written by `humans-md sync --to junie`, batch run: quoted. Junie CLI Early Access 26.10.20 with the extension, interactive: quoted on the first prompt of a session and again after `/new`, not added to the second prompt.
+  - Codex CLI 0.163.0 and Cursor CLI 2026.10.16 with the 0.3.0 hook command: quoted.
+  - Not tested: GitHub Copilot CLI, Cline, Warp, the Devin Desktop window, OpenCode 1. None of this establishes how closely a model follows the preferences.
+
 ## Integrations — 2026-10-17
 
 Not a change to the format or its contract id.
