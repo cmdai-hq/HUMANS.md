@@ -13,6 +13,7 @@ Not a change to the format or its contract id.
   - Junie CLI 26.10.12, copy written by `humans-md sync --to junie`, batch run: quoted. Junie CLI Early Access 26.10.20 with the extension, interactive: quoted on the first prompt of a session and again after `/new`, not added to the second prompt.
   - Codex CLI 0.163.0 and Cursor CLI 2026.10.16 with the 0.3.0 hook command: quoted.
   - Not tested: GitHub Copilot CLI, Cline, Warp, the Devin Desktop window, OpenCode 1. None of this establishes how closely a model follows the preferences.
+- Evidence after publication, the same day, invented profile, macOS: plugin 0.3.0 installed from GitHub with the commands in its README was quoted once in Google Antigravity CLI 1.4.0 (`agy plugin install …/tree/main/plugins/antigravity`), OpenCode 2.0.32 (`opencode plugin add 'github:…#main::path:plugins/opencode'`), Devin CLI 3000.11.92 (`devin plugins install …#plugins/devin --local`) and Codex CLI 0.163.0 (after `codex plugin marketplace upgrade`: nothing until the changed hook was trusted again, then quoted). `@humans-md/cli` 0.3.0 from npm wrote the Junie copy (`npx -y @humans-md/cli sync --to junie`), quoted in Junie CLI 26.10.12. The Junie extension and Cursor were not tested again after publication.
 
 ## Integrations — 2026-10-17
 
