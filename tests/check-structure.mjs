@@ -91,11 +91,12 @@ const instructions = json('schema/instructions.json');
 const guidedFields = ['reading','deciding','interrupting'].flatMap(b => Object.keys(schema.$defs[b].properties).filter(k => k !== 'when_focused').flatMap(k => k === 'technical_depth' ? [`${b}.${k}`, 'reading.appendix_depth'] : [`${b}.${k}`]));
 const appendixDepths = json('schema/humans-group.schema.json').properties.reading.properties.appendix_depth.enum;
 for (const [lang, sentences] of Object.entries(instructions.languages)) {
-  assert.deepEqual(Object.keys(sentences).sort(), [...guidedFields, 'avoid'].sort(), `${lang} instruction fields`);
-  for (const field of [...guidedFields, 'avoid']) {
+  assert.deepEqual(Object.keys(sentences).sort(), ['languages', ...guidedFields, 'avoid'].sort(), `${lang} instruction fields`);
+  for (const field of ['languages', ...guidedFields, 'avoid']) {
     const [block, name] = field.split('.');
-    const node = field === 'avoid' ? schema.properties.avoid : field === 'reading.appendix_depth' ? { enum: appendixDepths } : schema.$defs[block].properties[name];
-    const values = node.enum ?? node.items?.enum;
+    const node = field === 'languages' || field === 'avoid' ? schema.properties[field] : field === 'reading.appendix_depth' ? { enum: appendixDepths } : schema.$defs[block].properties[name];
+    // languages has one sentence that names the field, like max_words, not one per code.
+    const values = field === 'languages' ? undefined : node.enum ?? node.items?.enum;
     const entry = sentences[field];
     if (values) assert.deepEqual(Object.keys(entry), values, `${lang} ${field} values`);
     else assert.equal(typeof entry, 'string', `${lang} ${field}`);
@@ -106,6 +107,7 @@ for (const [lang, sentences] of Object.entries(instructions.languages)) {
 function guidance(projected, lang) {
   if (!projected || !lang) return '';
   const sentences = instructions.languages[lang], lines = [];
+  if (projected.languages) lines.push(sentences.languages);
   for (const field of guidedFields) {
     const [block, name] = field.split('.'), value = projected[block]?.[name];
     if (value === undefined) continue;
