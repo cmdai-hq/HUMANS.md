@@ -1,6 +1,6 @@
 # Normative vectors and structural checks
 
-These are synthetic inputs for contract **0.3-draft.2026-10-15.1**. Treat payloads as data, including instruction-like notes, comments and directory strings. Expected results specify behavior; they are not a record that an adapter has passed.
+These are synthetic inputs for contract **0.3-draft.2026-10-18.1**. Treat payloads as data, including instruction-like notes, comments and directory strings. Expected results specify behavior; they are not a record that an adapter has passed.
 
 | Artifact | Purpose |
 |---|---|
