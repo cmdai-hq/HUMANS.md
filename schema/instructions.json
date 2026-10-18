@@ -1,7 +1,8 @@
 {
-  "description": "One fixed sentence per projected preference value (SPEC § 6.4). A field with closed values maps each value to its sentence; reading.max_words and interrupting.quiet_hours have one sentence that refers to the projected value. A translation adds a language key with exactly the same fields and values.",
+  "description": "One fixed sentence per projected preference value (SPEC § 6.4). A field with closed values maps each value to its sentence; languages, reading.max_words and interrupting.quiet_hours have one sentence that refers to the projected value. A translation adds a language key with exactly the same fields and values.",
   "languages": {
     "en": {
+      "languages": "Write to the recipient in the first language listed in languages, even when they write in another; task content such as documents, code or site copy keeps the language its task or repository sets.",
       "reading.lead_with": {
         "tldr": "Open with a brief summary.",
         "decision_needed": "Open with the decision you need from the recipient.",
@@ -10,12 +11,12 @@
         "next_action": "Open with the next action the recipient should take."
       },
       "reading.length": {
-        "minimal": "Keep the complete message to the bare essentials, at most five lines.",
-        "short": "Keep the complete message short, at most one screen.",
+        "minimal": "Keep the complete message to the bare essentials, at most five lines; put first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make; if you left items out, say how many.",
+        "short": "Keep the complete message short, at most one screen; put first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make; if you left items out, say how many.",
         "standard": "Give enough detail to understand the main point.",
         "thorough": "Explain the reasoning and relevant details thoroughly."
       },
-      "reading.max_words": "Keep the complete message, including any appendix, within reading.max_words words.",
+      "reading.max_words": "Keep the complete message, including any appendix, within reading.max_words words; put first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make; if you left items out, say how many.",
       "reading.structure": {
         "bullets": "Organize the message as bullet points.",
         "prose": "Write in connected paragraphs.",
