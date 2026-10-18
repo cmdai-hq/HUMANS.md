@@ -20,9 +20,13 @@ From the repo root (Unicode 17.0 runtime):
 
 A change of meaning lands in one commit across `SPEC.md`, `schema/`,
 `VOCABULARY.md` + `schema/terms.json`, the vectors in `tests/`, `CHANGELOG.md`
-and `CONFORMANCE.md`, then a regenerated `CONTRACT.json`. The contract id and
-any release or tag are the maintainer's call: propose, don't bump. Full policy:
-`CONTRIBUTING.md`. Vector format: `tests/README.md`.
+and `CONFORMANCE.md`, then a regenerated `CONTRACT.json`. The same PR sets the
+next contract id, `<version>-draft.<YYYY-MM-DD>.<n>`, everywhere the current id
+appears (`git grep` it; historical CHANGELOG lines stay), and titles its
+CHANGELOG entry with it. Use the expected merge date and fix it if the merge
+slips. The maintainer approves the id by merging. Releases and tags remain the
+maintainer's call. Full policy: `CONTRIBUTING.md`. Vector format:
+`tests/README.md`.
 
 ## Gotchas
 
