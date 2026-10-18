@@ -265,7 +265,7 @@ for (const p of docPaths) {
 const inventory = [...docPaths.filter(p => !p.startsWith('tests/')), 'LICENSE','tools/LICENSE', ...files('schema'), ...files('examples'), ...files('tests')].sort();
 assert.equal(new Set(inventory).size, inventory.length);
 const manifest = {
-  contract: '0.3-draft.2026-10-15.1',
+  contract: '0.3-draft.2026-10-18.1',
   status: 'draft',
   repository: 'https://github.com/cmdai-hq/HUMANS.md',
   source_revision_note: 'Content manifest for this contract revision. Consumers also pin the canonical commit that contains these files.',

@@ -1,6 +1,6 @@
 # Conformance and rule successors
 
-Contract **0.3-draft.2026-10-15.1**. This matrix supersedes the earlier draft's requirements; it does not rewrite the dated review or claim historical tests already prove the new behavior. A rule's expected evidence is a release obligation, not a test result.
+Contract **0.3-draft.2026-10-18.1**. This matrix supersedes the earlier draft's requirements; it does not rewrite the dated review or claim historical tests already prove the new behavior. A rule's expected evidence is a release obligation, not a test result.
 
 ## Successors for the 17 historical MUST occurrences
 

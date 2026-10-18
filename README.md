@@ -33,7 +33,7 @@ notes: "I often read on my phone."
 ---
 ```
 
-- [Specification](SPEC.md): **0.3 draft**, contract `0.3-draft.2026-10-15.1`; [vocabulary](VOCABULARY.md), [schemas](schema/), [vectors and test instructions](tests/README.md).
+- [Specification](SPEC.md): **0.3 draft**, contract `0.3-draft.2026-10-18.1`; [vocabulary](VOCABULARY.md), [schemas](schema/), [vectors and test instructions](tests/README.md).
 - [Conformance and successor rules](CONFORMANCE.md), [changes](CHANGELOG.md), [contribution and version policy](CONTRIBUTING.md), [source manifest](CONTRACT.json).
 - Canonical source: [cmdai-hq/HUMANS.md](https://github.com/cmdai-hq/HUMANS.md). Mirrors must identify and verify their source revision. Website: [humansmd.dev](https://humansmd.dev).
 

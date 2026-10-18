@@ -2,7 +2,7 @@
 
 A portable file of preferences you approve: how agents write to you, ask for decisions, and interrupt you. It can also hold personal information you choose to share. An integration is required; the file name alone does not make an agent load it.
 
-- Status: unpublished draft; contract revision **0.3-draft.2026-10-15.1**; not a stable release.
+- Status: unpublished draft; contract revision **0.3-draft.2026-10-18.1**; not a stable release.
 - Canonical source: [cmdai-hq/HUMANS.md](https://github.com/cmdai-hq/HUMANS.md). Mirrors pin a source commit and package checksums; the version string alone cannot identify a draft revision.
 - Normative package: this document, [vocabulary](VOCABULARY.md), [profile schema](schema/humans.schema.json), [projection schema](schema/humans-projection.schema.json), [group schema](schema/humans-group.schema.json), [terms](schema/terms.json), [instruction sentences](schema/instructions.json), and [vectors](tests/README.md).
 - Governance and version policy: [CONTRIBUTING.md](CONTRIBUTING.md). Changes and rule successors: [CHANGELOG.md](CHANGELOG.md), [CONFORMANCE.md](CONFORMANCE.md).

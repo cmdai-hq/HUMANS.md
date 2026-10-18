@@ -1,8 +1,8 @@
 # Changelog
 
-## Proposed contract revision — 2026-10-18
+## 0.3-draft.2026-10-18.1 — 2026-10-18
 
-Proposed, not released: the files keep the contract id `0.3-draft.2026-10-15.1` until the maintainer assigns a new one. Changing three sentences and adding one is a contract change (§ 6.4).
+Unpublished draft; no stable release or tag is introduced. Merged in [#9](https://github.com/cmdai-hq/HUMANS.md/pull/9). Changing three sentences and adding one is a contract change (§ 6.4); the frame and projection bytes are unchanged.
 
 - `languages` gets an instruction sentence, rendered first: write to the recipient in the first listed language, even when they write in another; task content such as documents, code or site copy keeps the language its task or repository sets. SPEC § 3.2 now says what the field is for, as the compiler interview already asked ("In which language do you read agents' replies most easily? It can differ from the one you write in.").
 - `minimal`, `short` and `max_words` keep what changes a result (§ 3.3): within the bound, a compressed message puts first any failure, skipped or unverified step, risk to data or security, change beyond the request or decision the recipient must make and, if it left items out, says how many. The bound still holds. The count is content, not an offer, so it fits `close_with: nothing`. § 4 replaces "Offer details on request" with the count.
