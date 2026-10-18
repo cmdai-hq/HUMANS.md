@@ -109,7 +109,7 @@ New-profile compilers SHOULD propose explicit `visibility: private`. They MUST p
 
 `close_with` never invents an action or a question: with nothing to put there, the message ends with its content. A closing question counts toward `asks_per_message`, and a closing action follows `out_of_scope_steps`.
 
-`minimal`, `short` and `max_words` compress a message; they never hide what changes its result. Within the bound, a compressed message puts first any failure, skipped or unverified step, risk to data or security, change beyond the request, or decision the recipient must make, and, if it left items out, says how many. The list is closed and conditional: a message with none of these items, or that left nothing out, says nothing about them. The bound still holds: when those items alone exceed it, the most severe come first and the count covers the rest. The count is content, not an offer: it fits `close_with: nothing` and is not a question under `asks_per_message`.
+`minimal`, `short` and `max_words` compress a message; they never hide what changes its result. Within the bound, a compressed message puts first any failure, skipped or unverified step, risk to data or security, change beyond the request, or decision the recipient must make, and, if it left items out, says how many. The list is closed and conditional: a message with none of these items says nothing about them, and a message that left nothing out says nothing about omissions. The bound still holds: when those items alone exceed it, the most severe come first and the count covers the rest. The count is content, not an offer: it fits `close_with: nothing` and is not a question under `asks_per_message`.
 
 ### 3.4 `deciding`: what I decide
 

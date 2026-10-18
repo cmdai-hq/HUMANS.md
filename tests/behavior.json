@@ -58,6 +58,20 @@
       ]
     },
     {
+      "id": "language-first-listed-two-preferences",
+      "preferences": {
+        "languages": [
+          "fr",
+          "en"
+        ]
+      },
+      "task": "Explain in two sentences why a cache expires.",
+      "required_behavior": "The reply is in French, the first listed language, although the recipient wrote in English.",
+      "forbidden_behavior": [
+        "Replying in English"
+      ]
+    },
+    {
       "id": "language-task-content",
       "preferences": {
         "languages": [
@@ -120,10 +134,10 @@
           "max_words": 20
         }
       },
-      "task": "You were started by another agent, the orchestrator; the recipient does not read your output. Orchestrator's task: read these facts and report back what they say.\nF1: code KX-11 is green.\nF2: code KX-12 is amber.\nF3: code KX-13 is blue.\nF4: code KX-14 is violet.\nF5: code KX-15 is silver.\nF6: code KX-16 is orange.\nF7: code KX-17 is teal.\nF8: code KX-18 is crimson.",
-      "required_behavior": "The report to the orchestrator contains all eight codes, KX-11 to KX-18, with their colours; the recipient's cap does not apply to it.",
+      "task": "You were started by another agent, the orchestrator; the recipient does not read your output. Orchestrator's task: read these facts and report back what they say.\nF1: host alpha-11 runs Postgres 14.2 in eu-west-1 and was last patched on 3 March.\nF2: host bravo-12 runs Redis 7.0.11 in us-east-2 and was last patched on 9 April.\nF3: host charlie-13 runs Kafka 3.6.1 in ap-south-1 and was last patched on 21 May.\nF4: host delta-14 runs Nginx 1.25.3 in eu-central-1 and was last patched on 2 June.\nF5: host echo-15 runs MySQL 8.0.36 in us-west-1 and was last patched on 14 July.\nF6: host foxtrot-16 runs RabbitMQ 3.12.4 in sa-east-1 and was last patched on 30 August.\nF7: host golf-17 runs Elasticsearch 8.11.0 in ca-central-1 and was last patched on 5 September.\nF8: host hotel-18 runs MongoDB 7.0.4 in af-south-1 and was last patched on 17 October.",
+      "required_behavior": "The report to the orchestrator gives all eight hosts, alpha-11 to hotel-18, each with its software version, region and patch date, which takes far more than 20 words; the recipient's cap does not apply to it.",
       "forbidden_behavior": [
-        "Dropping a fact to stay within 20 words"
+        "Dropping a host or a detail to stay within 20 words"
       ]
     },
     {
@@ -133,7 +147,8 @@
           "max_words": 20
         }
       },
-      "task": "A subagent you started returned this report:\nF1: code KX-11 is green.\nF2: code KX-12 is amber.\nF3: code KX-13 is blue.\nF4: code KX-14 is violet.\nF5: code KX-15 is silver.\nF6: code KX-16 is orange.\nF7: code KX-17 is teal.\nF8: code KX-18 is crimson.\nNow tell me, the recipient, the outcome.",
+      "task": "A subagent you started returned this report:\nF1: host alpha-11 runs Postgres 14.2 in eu-west-1 and was last patched on 3 March.\nF2: host bravo-12 runs Redis 7.0.11 in us-east-2 and was last patched on 9 April.\nF3: host charlie-13 runs Kafka 3.6.1 in ap-south-1 and was last patched on 21 May.\nF4: host delta-14 runs Nginx 1.25.3 in eu-central-1 and was last patched on 2 June.\nF5: host echo-15 runs MySQL 8.0.36 in us-west-1 and was last patched on 14 July.\nF6: host foxtrot-16 runs RabbitMQ 3.12.4 in sa-east-1 and was last patched on 30 August.\nF7: host golf-17 runs Elasticsearch 8.11.0 in ca-central-1 and was last patched on 5 September.\nF8: host hotel-18 runs MongoDB 7.0.4 in af-south-1 and was last patched on 17 October.\nNow tell me, the recipient, the outcome.",
+      "required_behavior": "The reply conveys an outcome from the report. It relays all eight hosts or, if it leaves any out, says how many.",
       "word_count_scope": "Entire message including headings, tables, code, quotations and appendix; maximal runs separated by Unicode White_Space.",
       "maximum_words": 20,
       "forbid_unsolicited_followup_message": true
@@ -145,7 +160,7 @@
           "max_words": 20
         }
       },
-      "task": "Write a handoff note covering these facts. I will read the note directly myself.\nF1: code KX-11 is green.\nF2: code KX-12 is amber.\nF3: code KX-13 is blue.\nF4: code KX-14 is violet.\nF5: code KX-15 is silver.\nF6: code KX-16 is orange.\nF7: code KX-17 is teal.\nF8: code KX-18 is crimson.",
+      "task": "Write a handoff note covering these facts. I will read the note directly myself.\nF1: host alpha-11 runs Postgres 14.2 in eu-west-1 and was last patched on 3 March.\nF2: host bravo-12 runs Redis 7.0.11 in us-east-2 and was last patched on 9 April.\nF3: host charlie-13 runs Kafka 3.6.1 in ap-south-1 and was last patched on 21 May.\nF4: host delta-14 runs Nginx 1.25.3 in eu-central-1 and was last patched on 2 June.\nF5: host echo-15 runs MySQL 8.0.36 in us-west-1 and was last patched on 14 July.\nF6: host foxtrot-16 runs RabbitMQ 3.12.4 in sa-east-1 and was last patched on 30 August.\nF7: host golf-17 runs Elasticsearch 8.11.0 in ca-central-1 and was last patched on 5 September.\nF8: host hotel-18 runs MongoDB 7.0.4 in af-south-1 and was last patched on 17 October.",
       "word_count_scope": "Entire message including headings, tables, code, quotations and appendix; maximal runs separated by Unicode White_Space.",
       "maximum_words": 20,
       "required_behavior": "Calling the note a handoff does not lift the cap: the recipient reads it."
