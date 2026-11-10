@@ -36,6 +36,25 @@ export const withholdReason = (text) => {
   return word ? "NOTE_WITHHELD_AGENT_DIRECTED" : null;
 };
 
+/**
+ * List every fixed instruction sentence of schema/instructions.json (SPEC § 6.4) with its place, language by language.
+ * non_owner holds no sentence: it only names fields that get none for a reader other than the owner.
+ */
+export function instructionSentences(instructions = readJson("schema/instructions.json")) {
+  const listed = [];
+  const walk = (label, sentences) => {
+    for (const [field, entry] of Object.entries(sentences)) {
+      for (const sentence of typeof entry === "string" ? [entry] : Object.values(entry)) listed.push({ where: `${label} ${field}`, sentence });
+    }
+  };
+  for (const [lang, sentences] of Object.entries(instructions.languages)) walk(lang, sentences);
+  return listed;
+}
+
+/** Places of the instruction sentences that contain an expression from the agent-directed list (SPEC § 6.4 allows none). */
+export const agentDirectedSentences = (instructions) =>
+  instructionSentences(instructions).filter(({ sentence }) => withholdReason(sentence) !== null).map(({ where }) => where);
+
 /** The only text form a consumer may use to pass a note to a model (SPEC § 6.3). */
 export const serializeNote = (text) =>
   JSON.stringify(text);

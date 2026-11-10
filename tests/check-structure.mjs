@@ -77,9 +77,15 @@ for (const id of ['maximal-me-header-no-variants', 'maximal-me-header-all-varian
 console.log(`PASS schemas: ${schemaPaths.length}; positive profiles: ${positiveFiles.length}; complete README example identical; HUMANS.md header matches SPEC § 10`);
 
 const projections = json('tests/projection.json');
+// The two static first lines (SPEC § 6.3) have one source: the text blocks in SPEC.md.
+assert.deepEqual([...specText.matchAll(/```text\n(HUMANS\.md [^\n]*)\n```/g)].map(m => m[1]), [projections.frame, projections.frame_non_owner], 'SPEC § 6.3 first lines');
+const audiences = ['owner', 'org', 'public', 'none'];
+/** Choose the SPEC § 6.3 first line for a vector's trusted audience: the owner line under owner context only. */
+const frameFor = audience => audience === 'owner' ? projections.frame : projections.frame_non_owner;
 for (const c of projections.cases) {
   validWith(project, c.expect, c.id);
-  assert.equal(c.expect_text, `${projections.frame}\n${canonical(c.expect)}\n`, c.id);
+  assert(audiences.includes(c.trusted_audience), `${c.id} trusted_audience`);
+  assert.equal(c.expect_text, `${frameFor(c.trusted_audience)}\n${canonical(c.expect)}\n`, c.id);
   assert(Buffer.byteLength(c.expect_text) <= 16384, c.id);
   for (const marker of c.absent_substrings ?? []) assert(!c.expect_text.includes(marker), c.id);
   if (c.expect.profile?.notes) assert.equal(c.expect.profile.notes, frontmatter(c.source).notes, c.id);
@@ -90,27 +96,37 @@ const instructions = json('schema/instructions.json');
 /** List the projected preference fields of SPEC §§ 3.3–3.5 in rendering order, with appendix_depth after technical_depth. */
 const guidedFields = ['reading','deciding','interrupting'].flatMap(b => Object.keys(schema.$defs[b].properties).filter(k => k !== 'when_focused').flatMap(k => k === 'technical_depth' ? [`${b}.${k}`, 'reading.appendix_depth'] : [`${b}.${k}`]));
 const appendixDepths = json('schema/humans-group.schema.json').properties.reading.properties.appendix_depth.enum;
-for (const [lang, sentences] of Object.entries(instructions.languages)) {
-  assert.deepEqual(Object.keys(sentences).sort(), ['languages', ...guidedFields, 'avoid'].sort(), `${lang} instruction fields`);
-  for (const field of ['languages', ...guidedFields, 'avoid']) {
-    const [block, name] = field.split('.');
-    const node = field === 'languages' || field === 'avoid' ? schema.properties[field] : field === 'reading.appendix_depth' ? { enum: appendixDepths } : schema.$defs[block].properties[name];
-    // languages has one sentence that names the field, like max_words, not one per code.
-    const values = field === 'languages' ? undefined : node.enum ?? node.items?.enum;
-    const entry = sentences[field];
-    if (values) assert.deepEqual(Object.keys(entry), values, `${lang} ${field} values`);
-    else assert.equal(typeof entry, 'string', `${lang} ${field}`);
-    for (const sentence of values ? Object.values(entry) : [entry]) assert.match(sentence, /^[^\n{}<>`*#|]+\.$/u, `${lang} ${field}`);
-  }
+const sentenceFields = ['languages', ...guidedFields, 'avoid'];
+/** Assert that a field's entry holds one plain line per closed value, or one line for a field whose sentence names the projected value. */
+function checkSentences(field, entry, label) {
+  const [block, name] = field.split('.');
+  const node = field === 'languages' || field === 'avoid' ? schema.properties[field] : field === 'reading.appendix_depth' ? { enum: appendixDepths } : schema.$defs[block].properties[name];
+  // languages has one sentence that names the field, like max_words, not one per code.
+  const values = field === 'languages' ? undefined : node.enum ?? node.items?.enum;
+  if (values) assert.deepEqual(Object.keys(entry), values, `${label} ${field} values`);
+  else assert.equal(typeof entry, 'string', `${label} ${field}`);
+  for (const sentence of values ? Object.values(entry) : [entry]) assert.match(sentence, /^[^\n{}<>`*#|]+\.$/u, `${label} ${field}`);
 }
-/** Render the SPEC § 6.4 lines for a projected profile or group in the given language, each followed by LF. */
-function guidance(projected, lang) {
+for (const [lang, sentences] of Object.entries(instructions.languages)) {
+  assert.deepEqual(Object.keys(sentences).sort(), [...sentenceFields].sort(), `${lang} instruction fields`);
+  for (const field of sentenceFields) checkSentences(field, sentences[field], lang);
+}
+// non_owner (SPEC § 6.4): the guided fields that get no sentence for a reader other than the owner; it holds no sentence of its own.
+const nonOwner = instructions.non_owner;
+assert.deepEqual(Object.keys(nonOwner), ['description', 'omitted'], 'non_owner members');
+assert(nonOwner.omitted.length > 0 && new Set(nonOwner.omitted).size === nonOwner.omitted.length, 'non_owner omitted entries are distinct');
+for (const field of nonOwner.omitted) assert(guidedFields.includes(field), `non_owner omitted ${field} is a guided field`);
+/**
+ * Render the SPEC § 6.4 lines for a projected profile or group in the given language, each followed by LF.
+ * For a reader other than the owner, skip the non_owner omitted fields; every other sentence is the owner one.
+ */
+function guidance(projected, lang, forOwner = true) {
   if (!projected || !lang) return '';
   const sentences = instructions.languages[lang], lines = [];
   if (projected.languages) lines.push(sentences.languages);
   for (const field of guidedFields) {
     const [block, name] = field.split('.'), value = projected[block]?.[name];
-    if (value === undefined) continue;
+    if (value === undefined || (!forOwner && nonOwner.omitted.includes(field))) continue;
     const entry = sentences[field];
     if (typeof entry === 'string') lines.push(entry);
     else for (const v of [value].flat()) lines.push(entry[v]);
@@ -118,15 +134,28 @@ function guidance(projected, lang) {
   for (const v of projected.avoid ?? []) lines.push(sentences.avoid[v]);
   return lines.map(line => `${line}\n`).join('');
 }
+const omissionsShown = new Set();
 for (const c of json('tests/render-budget.json').cases) {
   validWith(project, c.projection, c.id);
-  const rendered = `${projections.frame}\n${canonical(c.projection)}\n${guidance(c.projection.profile, c.guidance)}`;
+  // A case without trusted_audience is rendered for its owner.
+  const audience = c.trusted_audience ?? 'owner';
+  assert(audiences.includes(audience), `${c.id} trusted_audience`);
+  const rendered = `${frameFor(audience)}\n${canonical(c.projection)}\n${guidance(c.projection.profile, c.guidance, audience === 'owner')}`;
   if (c.expect_text) {
     assert.equal(rendered, c.expect_text);
     assert.equal(Buffer.byteLength(rendered), c.adapter_budget_bytes);
+    // An omission is shown when the exact text of a non-owner rendering holds the value in its JSON line and not its owner sentence.
+    if (audience !== 'owner' && c.guidance) for (const field of nonOwner.omitted) {
+      const [block, name] = field.split('.'), value = c.projection.profile?.[block]?.[name];
+      if (value === undefined) continue;
+      const entry = instructions.languages[c.guidance][field];
+      assert(!c.expect_text.includes(typeof entry === 'string' ? entry : entry[value]), `${c.id} ${field}`);
+      omissionsShown.add(field);
+    }
   } else assert.equal(Buffer.byteLength(rendered), c.adapter_budget_bytes + 1);
 }
-console.log(`PASS projection expectations: ${projections.cases.length}; exact JSON/text and render-budget vectors; instruction sentences cover every projected value (${Object.keys(instructions.languages).join(', ')}) (no renderer executed)`);
+assert.deepEqual([...omissionsShown].sort(), [...nonOwner.omitted].sort(), 'render-budget vectors show every non_owner omission');
+console.log(`PASS projection expectations: ${projections.cases.length}, ${projections.cases.filter(c => c.trusted_audience !== 'owner').length} for a reader other than the owner; exact JSON/text under the first line of each trusted audience and render-budget vectors; instruction sentences cover every projected value (${Object.keys(instructions.languages).join(', ')}); non_owner leaves ${nonOwner.omitted.length} fields without a sentence (no renderer executed)`);
 
 const groups = [...files('tests/group').filter(f => f.endsWith('.json')).map(json), ...json('tests/group-edge-cases.json').cases];
 for (const c of groups) {
@@ -265,7 +294,7 @@ for (const p of docPaths) {
 const inventory = [...docPaths.filter(p => !p.startsWith('tests/')), 'LICENSE','tools/LICENSE', ...files('schema'), ...files('examples'), ...files('tests')].sort();
 assert.equal(new Set(inventory).size, inventory.length);
 const manifest = {
-  contract: '0.3-draft.2026-10-18.1',
+  contract: '0.3-draft.2026-11-11.1',
   status: 'draft',
   repository: 'https://github.com/cmdai-hq/HUMANS.md',
   source_revision_note: 'Content manifest for this contract revision. Consumers also pin the canonical commit that contains these files.',
