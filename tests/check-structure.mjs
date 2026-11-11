@@ -58,7 +58,7 @@ const group = ajv.getSchema(json('schema/humans-group.schema.json').$id);
 function validWith(check, data, name) {
   assert(check(data), `${name}: ${JSON.stringify(check.errors)}`);
 }
-const positiveFiles = [...files('examples').filter(f => f.endsWith('.md') && !f.includes('/source/')), ...files('tests/valid'), ...files('tests/schema-valid-but-withheld')];
+const positiveFiles = [...files('examples').filter(f => f.endsWith('.md') && !f.includes('/source/')), ...files('tests/valid')];
 for (const p of positiveFiles) validWith(validate, frontmatter(read(p)), p);
 const readmeExample = read('README.md').match(/```yaml\n([\s\S]*?)```/)[1];
 assert.equal(readmeExample, read('examples/HUMANS.md'), 'copyable README example drift');
@@ -88,8 +88,23 @@ for (const c of projections.cases) {
   assert.equal(c.expect_text, `${frameFor(c.trusted_audience)}\n${canonical(c.expect)}\n`, c.id);
   assert(Buffer.byteLength(c.expect_text) <= 16384, c.id);
   for (const marker of c.absent_substrings ?? []) assert(!c.expect_text.includes(marker), c.id);
+  // A note is served to its owner's agent only, exactly as written; nothing is withheld by content (SPEC § 6.2).
+  if (c.trusted_audience !== 'owner') assert(!c.expect.profile || !('notes' in c.expect.profile), `${c.id}: a note served to a reader other than the owner`);
+  if (c.expect.profile) assert.deepEqual(c.expect.profile.withheld, [], `${c.id} withheld`);
   if (c.expect.profile?.notes) assert.equal(c.expect.profile.notes, frontmatter(c.source).notes, c.id);
-  if (c.writer_valid) validWith(validate, frontmatter(c.source), c.id);
+  if (c.writer_valid) {
+    const source = frontmatter(c.source);
+    validWith(validate, source, c.id);
+    if (c.trusted_audience === 'owner' && c.expect.profile) assert.equal(c.expect.profile.notes, source.notes, `${c.id}: the owner's note, as written`);
+  }
+}
+// The same source read by its owner and by someone else shows the rule on one note.
+for (const [mine, theirs] of [['agent-directed-note', 'agent-directed-note-org-member'], ['served-to-owner', 'served-to-org-member']]) {
+  const [a, b] = [mine, theirs].map(id => projections.cases.find(c => c.id === id));
+  assert.equal(a.source, b.source, `${mine} / ${theirs} source`);
+  assert.equal(typeof a.expect.profile.notes, 'string', mine);
+  const { notes, ...withoutNote } = a.expect.profile;
+  assert.deepEqual(b.expect.profile, withoutNote, `${theirs}: same projection without the note`);
 }
 // Instruction sentences (SPEC § 6.4): exact coverage of projected values, one plain line each.
 const instructions = json('schema/instructions.json');
@@ -140,6 +155,8 @@ for (const c of json('tests/render-budget.json').cases) {
   // A case without trusted_audience is rendered for its owner.
   const audience = c.trusted_audience ?? 'owner';
   assert(audiences.includes(audience), `${c.id} trusted_audience`);
+  // A rendering for a reader other than the owner holds no note (SPEC § 6.2).
+  if (audience !== 'owner') assert(!('notes' in (c.projection.profile ?? {})), `${c.id}: a note served to a reader other than the owner`);
   const rendered = `${frameFor(audience)}\n${canonical(c.projection)}\n${guidance(c.projection.profile, c.guidance, audience === 'owner')}`;
   if (c.expect_text) {
     assert.equal(rendered, c.expect_text);
@@ -205,13 +222,18 @@ for (const type of ['role', 'topic', 'decision']) {
   const mentioned = [...section.matchAll(/`([^`]+)`/g)].map(x=>x[1]).filter(x=>!x.startsWith('context.'));
   assert.deepEqual(mentioned, schema.$defs[type].enum, type);
 }
-const terms = json('schema/terms.json');
-assert.deepEqual(Object.keys(terms), ['agent_words']);
-const section = vocabulary.slice(vocabulary.indexOf('## Words addressed to an agent'));
-for (const lang of ['en','fr']) for (const term of terms.agent_words[lang]) assert(section.includes('`'+term+'`'));
-const listedAgentTerms = [...section.matchAll(/`([^`]+)`/g)].map(x=>x[1]);
-assert.deepEqual([...new Set(listedAgentTerms)].sort(), [...new Set(Object.values(terms.agent_words).flat())].sort());
-for (const c of json('tests/withholding.json').serialization) assert.equal(JSON.stringify(c.text), c.json_string);
+// Notes (SPEC § 6.2): no word list exists, and the decision to serve follows the trusted audience alone.
+assert(!existsSync(join(root, 'schema/terms.json')) && !/^## Words addressed to an agent/m.test(vocabulary), 'no word list for notes');
+const withholding = json('tests/withholding.json');
+assert.deepEqual(Object.keys(withholding.audiences), audiences, 'withholding audiences');
+for (const [audience, decision] of Object.entries(withholding.audiences)) assert.equal(decision, audience === 'owner' ? 'serve' : 'withhold', `withholding ${audience}`);
+const validNote = ajv.compile({ $ref: `${schema.$id}#/properties/notes` });
+for (const c of withholding.cases) {
+  // A case is a text and nothing else: what it says decides nothing.
+  assert.deepEqual(Object.keys(c), ['text'], 'withholding case shape');
+  validWith(validNote, c.text, `withholding note ${JSON.stringify(c.text)}`);
+}
+for (const c of withholding.serialization) assert.equal(JSON.stringify(c.text), c.json_string);
 assert.equal(Object.values(schema.$defs).filter(x => ['What I read.','What I decide.','When to interrupt me.'].includes(x.description)).reduce((n,x)=>n+Object.keys(x.properties).length,0),25);
 for (const c of json('tests/requests.json').rejected_arguments) {
   assert.equal(c.control_must_succeed, true);
@@ -249,7 +271,38 @@ for (const derived of [projectionSchema, groupSchema]) {
   alone.compile(derived);
 }
 for (const k of ['id', 'updated', 'notes']) assert.deepEqual(projectionSchema.oneOf[1].properties.profile.properties[k], schema.properties[k], `projection ${k}`);
-console.log('PASS vocabulary bijection, 25 preference fields, derived schema blocks, self-contained projection and group schemas, note encoding vectors, state-request positive controls');
+// Text in a projection (SPEC §§ 2, 6.2). Walk every value a projected profile or a group result can carry: each must be a closed value,
+// a number, a boolean, a string with one of the pinned patterns below, or `notes`. Every object must be closed, and any other
+// schema shape fails, so a new string cannot enter a projection without this list changing.
+const pinnedPatterns = { id: schema.properties.id.pattern, updated: schema.properties.updated.pattern, 'interrupting.quiet_hours.from': '^(?:[01][0-9]|2[0-3]):(?:00|30)$', 'interrupting.quiet_hours.to': '^(?:[01][0-9]|2[0-3]):(?:00|30)$' };
+/** Classify each value reachable through properties and items of a schema; return the paths of patterned and of unconstrained strings. */
+function projectedText(rootSchema, start) {
+  const found = { patterned: {}, free: [] };
+  const allowed = { object: ['$schema', '$id', '$defs', 'title', 'type', 'additionalProperties', 'properties', 'required', 'minProperties', 'allOf', 'description'], array: ['type', 'items', 'minItems', 'maxItems', 'uniqueItems', 'description'] };
+  (function walk(node, path) {
+    if (node.$ref) node = node.$ref.slice(2).split('/').reduce((s, k) => s[k], rootSchema);
+    if (node.enum || node.const !== undefined) return;
+    if (node.anyOf && Object.keys(node).every(k => k === 'anyOf' || k === 'description')) return node.anyOf.forEach(alternative => walk(alternative, path));
+    if (['boolean', 'integer', 'number'].includes(node.type)) return;
+    if (node.type === 'object' || node.type === 'array') for (const k of Object.keys(node)) assert(allowed[node.type].includes(k), `${path || '(root)'}: unexpected ${k} on a projected ${node.type}`);
+    if (node.type === 'object') {
+      assert.equal(node.additionalProperties, false, `${path || '(root)'}: a projected object must be closed`);
+      for (const [k, v] of Object.entries(node.properties)) walk(v, path ? `${path}.${k}` : k);
+    } else if (node.type === 'array') walk(node.items, `${path}[]`);
+    else if (node.type === 'string') { if (typeof node.pattern === 'string') found.patterned[path] = node.pattern; else found.free.push(path); }
+    else assert.fail(`${path}: a projected value with no closed shape (${JSON.stringify(Object.keys(node))})`);
+  })(start, '');
+  return found;
+}
+const profileText = projectedText(projectionSchema, projectionSchema.oneOf[1].properties.profile);
+assert.deepEqual(profileText.free, ['notes'], 'notes is the only unconstrained string a projected profile can carry');
+assert.deepEqual(profileText.patterned, pinnedPatterns, 'patterned strings of a projected profile');
+// A group result: the only string without closed values is a conflict's value, and each conflict field pins it to that field's closed values.
+assert.deepEqual(projectedText(groupSchema, groupSchema), { patterned: {}, free: ['conflicts[].values[].value'] }, 'strings of a group result');
+const pinnedConflictValues = Object.fromEntries(groupSchema.properties.conflicts.items.allOf.map(rule => [rule.if.properties.field.const, rule.then.properties.values.items.properties.value]));
+assert.deepEqual(Object.keys(pinnedConflictValues).sort(), [...conflictFields].sort(), 'every conflict field pins its values');
+for (const [field, value] of Object.entries(pinnedConflictValues)) assert(Array.isArray(value.enum) || value.type === 'integer', `conflict values of ${field} are closed`);
+console.log('PASS vocabulary bijection, 25 preference fields, derived schema blocks, self-contained projection and group schemas, closed projection and group shapes with notes as the only unconstrained string, note audience and encoding vectors, state-request positive controls');
 
 const behavior = json('tests/behavior.json').cases;
 const permission = behavior.find(c => c.id === 'repository-permission-wins');

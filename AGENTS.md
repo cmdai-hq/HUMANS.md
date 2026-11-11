@@ -19,7 +19,7 @@ From the repo root (Unicode 17.0 runtime):
 ## Changing the contract
 
 A change of meaning lands in one commit across `SPEC.md`, `schema/`,
-`VOCABULARY.md` + `schema/terms.json`, the vectors in `tests/`, `CHANGELOG.md`
+`VOCABULARY.md`, the vectors in `tests/`, `CHANGELOG.md`
 and `CONFORMANCE.md`, then a regenerated `CONTRACT.json`. The same PR sets the
 next contract id, `<version>-draft.<YYYY-MM-DD>.<n>`, everywhere the current id
 appears (`git grep` it; historical CHANGELOG lines stay), and titles its
